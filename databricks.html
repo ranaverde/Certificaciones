@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databricks Certified Data Engineer Associate - Mis Apuntes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Volver a Inicio</a>
+        
+        <header class="page-header">
+            <h1>🧱 Databricks Certified Data Engineer Associate</h1>
+            <p class="subtitle">Certificación de Ingeniería de Datos</p>
+        </header>
+
+        <main>
+            <!-- Apache Spark Fundamentals -->
+            <section class="section">
+                <h2>⚡ Apache Spark Fundamentals</h2>
+                
+                <div class="note-box">
+                    <h3>Conceptos Clave de Spark</h3>
+                    <ul class="bullet-list">
+                        <li><strong>RDD:</strong> Resilient Distributed Dataset - abstracción fundamental</li>
+                        <li><strong>DataFrame:</strong> Colección distribuida de datos organizados en columnas</li>
+                        <li><strong>Dataset:</strong> API type-safe (Scala/Java)</li>
+                        <li><strong>Transformations:</strong> Operaciones lazy (map, filter, select)</li>
+                        <li><strong>Actions:</strong> Operaciones que devuelven resultados (collect, count, show)</li>
+                    </ul>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 Concepto Clave:</strong> Spark usa evaluación perezosa (lazy evaluation) - las transformaciones no se ejecutan hasta que se llama a una acción.
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 1: DataFrames Básicos</h3>
+                    <pre><code># Leer un archivo CSV
+df = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("/path/to/data.csv")
+
+# Transformaciones básicas
+df_filtered = df.filter(df.age > 18) \
+    .select("name", "age", "city")
+
+# Mostrar resultados
+df_filtered.show()</code></pre>
+                </div>
+            </section>
+
+            <!-- Delta Lake -->
+            <section class="section">
+                <h2>🔺 Delta Lake</h2>
+                
+                <div class="note-box">
+                    <h3>Características de Delta Lake</h3>
+                    <ul class="bullet-list">
+                        <li><strong>ACID Transactions:</strong> Garantías transaccionales</li>
+                        <li><strong>Time Travel:</strong> Versionado de datos</li>
+                        <li><strong>Schema Enforcement:</strong> Validación de esquemas</li>
+                        <li><strong>Schema Evolution:</strong> Evolución controlada del esquema</li>
+                        <li><strong>Upserts:</strong> Operaciones MERGE</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 2: Trabajar con Delta Tables</h3>
+                    <pre><code># Crear una Delta Table
+df.write.format("delta") \
+    .mode("overwrite") \
+    .save("/delta/customers")
+
+# Leer una Delta Table
+delta_df = spark.read.format("delta") \
+    .load("/delta/customers")
+
+# Time Travel - leer versión anterior
+old_version = spark.read.format("delta") \
+    .option("versionAsOf", 5) \
+    .load("/delta/customers")
+
+# Ver historial
+from delta.tables import DeltaTable
+deltaTable = DeltaTable.forPath(spark, "/delta/customers")
+deltaTable.history().show()</code></pre>
+                </div>
+            </section>
+
+            <!-- ETL con Databricks -->
+            <section class="section">
+                <h2>🔄 ETL con Databricks</h2>
+                
+                <div class="note-box">
+                    <h3>Patrones ETL Comunes</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Bronze Layer:</strong> Datos raw/sin procesar</li>
+                        <li><strong>Silver Layer:</strong> Datos limpios y validados</li>
+                        <li><strong>Gold Layer:</strong> Datos agregados para análisis</li>
+                        <li><strong>Medallion Architecture:</strong> Arquitectura de capas</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 3: Pipeline ETL Medallion</h3>
+                    <pre><code># Bronze: Ingestar datos raw
+bronze_df = spark.read.json("/raw/events") \
+    .withColumn("ingestion_time", current_timestamp())
+
+bronze_df.write.format("delta") \
+    .mode("append") \
+    .save("/delta/bronze/events")
+
+# Silver: Limpiar y transformar
+from pyspark.sql.functions import col, to_date
+
+silver_df = spark.read.format("delta") \
+    .load("/delta/bronze/events") \
+    .filter(col("event_type").isNotNull()) \
+    .withColumn("event_date", to_date(col("timestamp")))
+
+silver_df.write.format("delta") \
+    .mode("overwrite") \
+    .save("/delta/silver/events")
+
+# Gold: Agregar para analytics
+gold_df = silver_df.groupBy("event_date", "event_type") \
+    .agg(count("*").alias("event_count"))
+
+gold_df.write.format("delta") \
+    .mode("overwrite") \
+    .save("/delta/gold/event_summary")</code></pre>
+                </div>
+            </section>
+
+            <!-- Operaciones MERGE -->
+            <section class="section">
+                <h2>🔀 Operaciones MERGE (Upsert)</h2>
+                
+                <div class="note-box">
+                    <h3>MERGE en Delta Lake</h3>
+                    <ul class="bullet-list">
+                        <li>Combinar INSERT, UPDATE y DELETE en una operación</li>
+                        <li>Fundamental para CDC (Change Data Capture)</li>
+                        <li>Operación atómica y eficiente</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 4: MERGE Operation</h3>
+                    <pre><code>from delta.tables import DeltaTable
+from pyspark.sql.functions import col
+
+# Cargar tabla existente
+target = DeltaTable.forPath(spark, "/delta/customers")
+
+# Nuevos datos o actualizaciones
+updates_df = spark.read.format("csv") \
+    .option("header", "true") \
+    .load("/updates/customers_new.csv")
+
+# Realizar MERGE
+target.alias("target") \
+    .merge(
+        updates_df.alias("updates"),
+        "target.customer_id = updates.customer_id"
+    ) \
+    .whenMatchedUpdate(set = {
+        "name": col("updates.name"),
+        "email": col("updates.email"),
+        "updated_at": current_timestamp()
+    }) \
+    .whenNotMatchedInsert(values = {
+        "customer_id": col("updates.customer_id"),
+        "name": col("updates.name"),
+        "email": col("updates.email"),
+        "created_at": current_timestamp()
+    }) \
+    .execute()</code></pre>
+                </div>
+            </section>
+
+            <!-- Workflows y Automatización -->
+            <section class="section">
+                <h2>🔁 Workflows y Automatización</h2>
+                
+                <div class="note-box">
+                    <h3>Databricks Workflows</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Jobs:</strong> Ejecución programada de notebooks/código</li>
+                        <li><strong>Triggers:</strong> Basados en tiempo o eventos</li>
+                        <li><strong>Task Dependencies:</strong> Orquestación de tareas</li>
+                        <li><strong>Retry Policies:</strong> Manejo de fallos</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 5: Auto Loader</h3>
+                    <pre><code># Auto Loader para streaming incremental
+streaming_df = spark.readStream \
+    .format("cloudFiles") \
+    .option("cloudFiles.format", "json") \
+    .option("cloudFiles.schemaLocation", "/schemas/events") \
+    .load("/incoming/events")
+
+# Procesar y escribir
+query = streaming_df.writeStream \
+    .format("delta") \
+    .outputMode("append") \
+    .option("checkpointLocation", "/checkpoints/events") \
+    .start("/delta/bronze/events")
+
+query.awaitTermination()</code></pre>
+                </div>
+            </section>
+
+            <!-- Optimización -->
+            <section class="section">
+                <h2>🚀 Optimización de Performance</h2>
+                
+                <div class="note-box">
+                    <h3>Técnicas de Optimización</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Z-Ordering:</strong> Organizar datos para queries rápidas</li>
+                        <li><strong>OPTIMIZE:</strong> Compactar archivos pequeños</li>
+                        <li><strong>VACUUM:</strong> Limpiar archivos antiguos</li>
+                        <li><strong>Partitioning:</strong> Particionar datos grandes</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 6: Optimización de Delta Tables</h3>
+                    <pre><code># Optimizar tabla
+spark.sql("OPTIMIZE delta.`/delta/events`")
+
+# Z-Order por columnas frecuentemente filtradas
+spark.sql("""
+    OPTIMIZE delta.`/delta/events`
+    ZORDER BY (event_date, user_id)
+""")
+
+# Limpiar archivos viejos (retener 7 días)
+spark.sql("""
+    VACUUM delta.`/delta/events` 
+    RETAIN 168 HOURS
+""")</code></pre>
+                </div>
+            </section>
+
+            <!-- Checklist de Progreso -->
+            <section class="section">
+                <h2>✓ Mi Progreso</h2>
+                <ul class="task-list">
+                    <li class="completed">Entender conceptos de Spark (RDD, DataFrame, Dataset)</li>
+                    <li class="completed">Trabajar con DataFrames y transformaciones</li>
+                    <li class="completed">Comprender Delta Lake y sus características</li>
+                    <li>Dominar operaciones MERGE para CDC</li>
+                    <li>Implementar arquitectura Medallion</li>
+                    <li>Crear pipelines ETL completos</li>
+                    <li>Configurar Auto Loader para streaming</li>
+                    <li>Optimizar rendimiento con Z-Ordering</li>
+                    <li>Practicar con Databricks Workflows</li>
+                    <li>Preparar examen de certificación</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>✨ Última actualización: <span id="date"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>

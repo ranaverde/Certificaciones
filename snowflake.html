@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake SnowPro Core - Mis Apuntes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Volver a Inicio</a>
+        
+        <header class="page-header">
+            <h1>❄️ Snowflake SnowPro Core</h1>
+            <p class="subtitle">Certificación Fundamental de Snowflake</p>
+        </header>
+
+        <main>
+            <!-- Arquitectura de Snowflake -->
+            <section class="section">
+                <h2>📐 Arquitectura de Snowflake</h2>
+                
+                <div class="note-box">
+                    <h3>Capas de Arquitectura</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Database Storage:</strong> Almacenamiento de datos optimizado y comprimido</li>
+                        <li><strong>Query Processing:</strong> Virtual warehouses para procesamiento de consultas</li>
+                        <li><strong>Cloud Services:</strong> Gestión de metadata, seguridad, y optimización</li>
+                    </ul>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 Concepto Clave:</strong> Snowflake separa el almacenamiento del cómputo, permitiendo escalar cada uno independientemente.
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 1: Crear tu primer Warehouse</h3>
+                    <pre><code>-- Crear un warehouse
+CREATE WAREHOUSE my_warehouse
+  WITH WAREHOUSE_SIZE = 'SMALL'
+  AUTO_SUSPEND = 300
+  AUTO_RESUME = TRUE;
+
+-- Usar el warehouse
+USE WAREHOUSE my_warehouse;</code></pre>
+                </div>
+            </section>
+
+            <!-- Gestión de Datos -->
+            <section class="section">
+                <h2>🗄️ Gestión de Datos</h2>
+                
+                <div class="note-box">
+                    <h3>Tipos de Tablas</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Permanent Tables:</strong> Almacenamiento persistente con Time Travel</li>
+                        <li><strong>Temporary Tables:</strong> Vida útil de la sesión</li>
+                        <li><strong>Transient Tables:</strong> Sin Fail-safe, menor costo</li>
+                        <li><strong>External Tables:</strong> Datos en almacenamiento externo</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 2: Trabajar con Tablas</h3>
+                    <pre><code>-- Crear una tabla permanente
+CREATE OR REPLACE TABLE customers (
+    customer_id INT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    created_date DATE
+);
+
+-- Cargar datos desde un archivo
+COPY INTO customers
+FROM @my_stage/customers.csv
+FILE_FORMAT = (TYPE = 'CSV' SKIP_HEADER = 1);</code></pre>
+                </div>
+            </section>
+
+            <!-- Time Travel y Fail-safe -->
+            <section class="section">
+                <h2>⏰ Time Travel y Fail-safe</h2>
+                
+                <div class="note-box">
+                    <h3>Time Travel</h3>
+                    <ul class="bullet-list">
+                        <li>Recuperar datos históricos hasta 90 días (Enterprise)</li>
+                        <li>Standard edition: hasta 1 día</li>
+                        <li>Usar <code>AT</code> o <code>BEFORE</code> para consultas históricas</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 3: Time Travel</h3>
+                    <pre><code>-- Ver datos de hace 5 minutos
+SELECT * FROM customers
+AT(OFFSET => -60*5);
+
+-- Restaurar una tabla eliminada
+UNDROP TABLE customers;
+
+-- Clonar una tabla en un punto específico del tiempo
+CREATE TABLE customers_backup CLONE customers
+AT(TIMESTAMP => '2024-01-01 00:00:00'::timestamp);</code></pre>
+                </div>
+            </section>
+
+            <!-- Optimización de Rendimiento -->
+            <section class="section">
+                <h2>⚡ Optimización de Rendimiento</h2>
+                
+                <div class="note-box">
+                    <h3>Clustering Keys</h3>
+                    <ul class="bullet-list">
+                        <li>Mejorar el rendimiento de consultas en tablas grandes</li>
+                        <li>Elegir columnas frecuentemente filtradas</li>
+                        <li>Monitorear con <code>SYSTEM$CLUSTERING_INFORMATION</code></li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 4: Clustering</h3>
+                    <pre><code>-- Agregar clustering key
+ALTER TABLE large_table
+CLUSTER BY (date_column, region);
+
+-- Verificar clustering
+SELECT SYSTEM$CLUSTERING_INFORMATION('large_table');</code></pre>
+                </div>
+            </section>
+
+            <!-- Seguridad -->
+            <section class="section">
+                <h2>🔒 Seguridad y Gobernanza</h2>
+                
+                <div class="note-box">
+                    <h3>Control de Acceso</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Roles:</strong> Sistema basado en roles (RBAC)</li>
+                        <li><strong>Users:</strong> Identidades de usuario</li>
+                        <li><strong>Grants:</strong> Permisos explícitos</li>
+                        <li><strong>Network Policies:</strong> Control de acceso por IP</li>
+                    </ul>
+                </div>
+
+                <div class="exercise-box">
+                    <h3>Ejercicio 5: Gestión de Roles</h3>
+                    <pre><code>-- Crear un rol
+CREATE ROLE data_analyst;
+
+-- Otorgar permisos
+GRANT USAGE ON WAREHOUSE analytics_wh TO ROLE data_analyst;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO ROLE data_analyst;
+
+-- Asignar rol a usuario
+GRANT ROLE data_analyst TO USER john_doe;</code></pre>
+                </div>
+            </section>
+
+            <!-- Checklist de Progreso -->
+            <section class="section">
+                <h2>✓ Mi Progreso</h2>
+                <ul class="task-list">
+                    <li class="completed">Entender la arquitectura de tres capas</li>
+                    <li class="completed">Crear y gestionar warehouses</li>
+                    <li class="completed">Trabajar con diferentes tipos de tablas</li>
+                    <li>Dominar Time Travel y Fail-safe</li>
+                    <li>Optimizar consultas con clustering</li>
+                    <li>Implementar seguridad y roles</li>
+                    <li>Practicar con data sharing</li>
+                    <li>Estudiar Snowpipe y streams</li>
+                    <li>Preparar examen de certificación</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>✨ Última actualización: <span id="date"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>

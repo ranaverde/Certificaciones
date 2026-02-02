@@ -1,0 +1,255 @@
+/* Bullet Journal Style - Clean and Minimal */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background-color: #f9f7f1;
+    color: #2c2c2c;
+    line-height: 1.8;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 3px solid #2c2c2c;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #666;
+    font-style: italic;
+}
+
+.intro {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #fef9e7;
+    border-left: 4px solid #f4d03f;
+}
+
+.intro p {
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.certifications {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.cert-card {
+    background-color: #fff;
+    padding: 30px;
+    border: 2px solid #2c2c2c;
+    box-shadow: 5px 5px 0px #2c2c2c;
+    transition: transform 0.3s ease;
+}
+
+.cert-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px #2c2c2c;
+}
+
+.cert-icon {
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.cert-card h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.cert-card p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.bullet-list {
+    list-style: none;
+    margin-bottom: 25px;
+}
+
+.bullet-list li {
+    padding-left: 25px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.bullet-list li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    font-size: 1.5em;
+    color: #2c2c2c;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #2c2c2c;
+    color: #fff;
+    text-decoration: none;
+    border: 2px solid #2c2c2c;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #fff;
+    color: #2c2c2c;
+}
+
+footer {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 2px solid #e0e0e0;
+    color: #666;
+    font-style: italic;
+}
+
+/* Page-specific styles */
+.page-header {
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #2c2c2c;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.section h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2c2c2c;
+}
+
+.section h3 {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+
+.note-box {
+    background-color: #f0f8ff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #4a90e2;
+}
+
+.exercise-box {
+    background-color: #f0fff4;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #48bb78;
+}
+
+.tip-box {
+    background-color: #fffaf0;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #ed8936;
+}
+
+code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+pre {
+    background-color: #2c2c2c;
+    color: #f9f7f1;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: #f9f7f1;
+}
+
+.task-list {
+    list-style: none;
+}
+
+.task-list li {
+    padding-left: 30px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.task-list li::before {
+    content: "☐";
+    position: absolute;
+    left: 5px;
+    font-size: 1.2em;
+}
+
+.task-list li.completed::before {
+    content: "☑";
+    color: #48bb78;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    .certifications {
+        grid-template-columns: 1fr;
+    }
+}

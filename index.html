@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Certificaciones - Bullet Journal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Mis Planes de Capacitación</h1>
+            <p class="subtitle">Bullet Journal de Certificaciones</p>
+        </header>
+
+        <main>
+            <section class="intro">
+                <p>Bienvenido a mi espacio de aprendizaje. Aquí documento mi progreso en las certificaciones que estoy persiguiendo.</p>
+            </section>
+
+            <section class="certifications">
+                <div class="cert-card">
+                    <div class="cert-icon">❄️</div>
+                    <h2>Snowflake SnowPro Core</h2>
+                    <p>Certificación fundamental de Snowflake para profesionales de datos</p>
+                    <ul class="bullet-list">
+                        <li>Arquitectura de Snowflake</li>
+                        <li>Gestión de datos</li>
+                        <li>Optimización de rendimiento</li>
+                        <li>Seguridad y gobernanza</li>
+                    </ul>
+                    <a href="snowflake.html" class="btn">Ver Apuntes →</a>
+                </div>
+
+                <div class="cert-card">
+                    <div class="cert-icon">🧱</div>
+                    <h2>Databricks Certified Data Engineer Associate</h2>
+                    <p>Certificación de ingeniería de datos en Databricks</p>
+                    <ul class="bullet-list">
+                        <li>Apache Spark fundamentals</li>
+                        <li>Delta Lake</li>
+                        <li>ETL con Databricks</li>
+                        <li>Workflows y automatización</li>
+                    </ul>
+                    <a href="databricks.html" class="btn">Ver Apuntes →</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>✨ Actualizado: <span id="date"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Display current date
+        document.getElementById('date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>
